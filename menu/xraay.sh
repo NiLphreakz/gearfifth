@@ -1057,9 +1057,9 @@ echo -e "Script By $creditt"
 function menu12 () {
 clear
 echo -n > /tmp/other.txt
-data=( `cat /usr/local/etc/xray/config.json | grep '^#vls' | cut -d ' ' -f 2`);
+data=( `cat /usr/local/etc/xray/config.json | grep '^#vls' | cut -d ' ' -f 2 | sort | uniq`);
 echo "-----------------------------------------";
-echo "------=[ Xray Vless Ws User Login ]=-----";
+echo "-----=[ Xray Vless Ws User Login ]=-----";
 echo "-----------------------------------------";
 for akun in "${data[@]}"
 do
@@ -1067,10 +1067,10 @@ if [[ -z "$akun" ]]; then
 akun="tidakada"
 fi
 echo -n > /tmp/ipvless.txt
-data2=( `netstat -anp | grep ESTABLISHED | grep tcp6 | grep xray | awk '{print $5}' | cut -d: -f1 | sort | uniq`);
+data2=( `cat /var/log/xray/access.log | tail -n 500 | cut -d " " -f 3 | sed 's/tcp://g' | cut -d ":" -f 1 | sort | uniq`);
 for ip in "${data2[@]}"
 do
-jum=$(cat /var/log/xray/access.log | grep -w $akun | awk '{print $3}' | cut -d: -f1 | grep -w $ip | sort | uniq)
+jum=$(cat /var/log/xray/access.log | grep -w "$akun" | tail -n 500 | cut -d " " -f 3 | sed 's/tcp://g' | cut -d ":" -f 1 | grep -w "$ip" | sort | uniq)
 if [[ "$jum" = "$ip" ]]; then
 echo "$jum" >> /tmp/ipvless.txt
 else
